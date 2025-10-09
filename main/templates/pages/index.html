@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Главная - AskMe{% endblock %}
+
+{% block content %}
+
+<!-- Вкладки -->
+<div class="mb-4">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Новые</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Лучшие</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Задать вопрос</a>
+        </li>
+    </ul>
+</div>
+
+<!-- Подключение карточек вопросов -->
+{% include "pages/questions/question1.html" %}
+{% include "pages/questions/question2.html" %}
+{% include "pages/questions/question3.html" %}
+{% include "pages/questions/question4.html" %}
+{% include "pages/questions/question5.html" %}
+
+
+<!-- Пагинация -->
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1">«</a>
+    </li>
+    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+    <li class="page-item">
+      <a class="page-link" href="#">»</a>
+    </li>
+  </ul>
+</nav>
+
+{% endblock %}
