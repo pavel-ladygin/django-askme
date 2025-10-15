@@ -8,10 +8,10 @@
 <div class="mb-4">
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" href="{% url 'home' %}">Новые</a>
+            <a class="nav-link" href="{% url 'home' %}">Новые</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'hot' %}">Лучшие</a>
+            <a class="nav-link active" href="{% url 'hot' %}">Лучшие</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'ask' %}">Задать вопрос</a>
@@ -19,7 +19,7 @@
     </ul>
 </div>
 
-<!-- Подключение карточек вопросов -->
+<!-- Список вопросов -->
 {% for q in page_obj.object_list %}
     {% include "question.html" with q=q %}
 {% empty %}

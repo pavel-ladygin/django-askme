@@ -1,0 +1,18 @@
+{% load static %}
+<article class="card mb-3">
+  <div class="card-body d-flex gap-3">
+    <div class="text-center">
+      <img src="{% static 'img/avatar1.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle mb-1">
+      <div class="small text-muted">{{ a.score }}</div>
+    </div>
+    <div class="flex-grow-1">
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="small text-muted">от {{ a.author }} • {{ a.created }}</span>
+        {% if a.is_accepted %}
+          <span class="badge bg-success">Принят</span>
+        {% endif %}
+      </div>
+      <div>{{ a.text }}</div>
+    </div>
+  </div>
+</article>
