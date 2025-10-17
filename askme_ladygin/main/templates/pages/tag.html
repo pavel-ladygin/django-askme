@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Тег: {{ current_tag|default:"тег" }} — AskMe{% endblock %}
+
+{% block content %}
+<!-- Заголовок и хлебные крошки -->
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+          <li class="breadcrumb-item active" aria-current="page">
+            Тег: {{ current_tag|default:"—" }}
+          </li>
+        </ol>
+      </nav>
+      <h1 class="h4 mb-0">
+        Вопросы по тегу: 
+        <span class="badge bg-secondary">{{ current_tag|default:"—" }}</span>
+      </h1>
+    </div>
+    <a href="{% url 'ask' %}" class="btn btn-primary">Задать вопрос</a>
+</div>
+
+  <!-- Список вопросов -->
+{% for q in page_obj.object_list %}
+    {% include "question.html" with q=q %}
+{% empty %}
+    <div class="text-muted">По тегу «{{ current_tag|default:"—" }}» вопросов пока нет.</div>
+{% endfor %}
+
+<!-- Пагинация -->
+{% include "paginator.html" with page_obj=page_obj %}
+
+{% endblock %}

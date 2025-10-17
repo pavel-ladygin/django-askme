@@ -15,8 +15,11 @@
     <!-- Шапка базовой страницы -->
     <nav class="navbar navbar-expand-lg bg-light border-bottom px-3">
     <div class="container-fluid">
-        
-        <a class="navbar-brand fw-bold" href="/">AskMe</a>
+
+
+        <!-- Название сайта -->
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">AskMe</a>
+
 
         <form class="d-flex mx-auto" role="search" onsubmit="return false;">
         <input class="form-control me-2" type="search" placeholder="Поиск..." aria-label="Search">
@@ -25,8 +28,8 @@
 
         <div class="d-flex align-items-center gap-2">
         <img src="{% static 'img/logo.png' %}" alt="Логотип" width="40" height="40" class="rounded-circle border">
-        <a href="/login/" class="btn btn-outline-success btn-sm">Войти</a>
-        <a href="/signup/" class="btn btn-primary btn-sm">Регистрация</a>
+        <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">Войти</a>
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Регистрация</a>
         </div>
         <!--
         Альтернативный вариант для авторизованного пользователя:
@@ -56,12 +59,21 @@
                     <div class="card-header">
                         Популярные теги
                     </div>
+<<<<<<< HEAD
                     <!-- Временные теги для рыбы -->
                     <div class="card-body">
                         <span class="badge bg-secondary me-1 mb-1">Python</span>
                         <span class="badge bg-secondary me-1 mb-1">Django</span>
                         <span class="badge bg-secondary me-1 mb-1">Web</span>
                     </div>
+=======
+                    <!-- Заглушка под теги -->
+                        <div class="card-body">
+                        <a href="{% url 'tag' 'python' %}" class="badge bg-secondary me-1 mb-1">Python</a>
+                        <a href="{% url 'tag' 'django' %}" class="badge bg-secondary me-1 mb-1">Django</a>
+                        <a href="{% url 'tag' 'web' %}" class="badge bg-secondary me-1 mb-1">Web</a>
+                        </div>
+>>>>>>> 45dc835 (hw2 done)
                 </div>
 
                 <div class="card mb-3">
