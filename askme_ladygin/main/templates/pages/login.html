@@ -6,7 +6,6 @@
 <div class="container" style="max-width: 500px;">
     <h3 class="mb-4">Вход</h3>
 
-    <!-- Сообщение об общей ошибке -->
     <div class="alert alert-danger" role="alert">
         Неверный логин или пароль.
     </div>
@@ -14,7 +13,7 @@
     <form method="post" novalidate>
         {% csrf_token %}
 
-        <!-- Имя пользователя -->
+        <!-- Поле для имени пользователя -->
         <div class="mb-3">
             <label for="username" class="form-label">Имя пользователя</label>
             <input type="text" class="form-control is-invalid" id="username" name="username"
@@ -24,7 +23,7 @@
             </div>
         </div>
 
-        <!-- Пароль -->
+        <!-- Поле для ввода пароля пользователя -->
         <div class="mb-3">
             <label for="password" class="form-label">Пароль</label>
             <input type="password" class="form-control is-invalid" id="password" name="password"

@@ -14,7 +14,7 @@
     <form method="post" novalidate>
         {% csrf_token %}
 
-        <!-- Имя пользователя -->
+        <!-- Поле для имени пользователя -->
         <div class="mb-3">
             <label for="username" class="form-label">Имя пользователя</label>
             <input type="text" class="form-control is-invalid" id="username" name="username"
@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <!-- Email -->
+        <!-- Поле для ввода emal пользователя-->
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control is-invalid" id="email" name="email"
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <!-- Пароль -->
+        <!-- Поле для ввода пароля пользователя -->
         <div class="mb-3">
             <label for="password1" class="form-label">Пароль</label>
             <input type="password" class="form-control is-invalid" id="password1" name="password1"
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <!-- Подтверждение пароля -->
+        <!-- Поле для подтверждения пароля -->
         <div class="mb-3">
             <label for="password2" class="form-label">Подтверждение пароля</label>
             <input type="password" class="form-control is-invalid" id="password2" name="password2"

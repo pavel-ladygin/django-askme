@@ -4,22 +4,20 @@
 {% block title %}Вопрос - AskMe{% endblock %}
 
 {% block content %}
-<!-- Вопрос -->
 <div class="card mb-3">
     <div class="card-body d-flex">
-        <!-- Аватар автора -->
         <div class="me-3 text-center">
             <img src="{% static 'img/avatar1.png' %}" alt="Аватар" width="50" height="50" class="rounded-circle mb-1">
             <div class="small text-muted">+12</div>
         </div>
-        <!-- Основной контент вопроса -->
+        <!-- Основной блок для контента вопроса -->
         <div class="flex-grow-1">
             <h5>Пример вопроса: как подключить Django?</h5>
             <div class="small text-muted mb-2">
                 Автор: <strong>User1</strong> · 3 часа назад
             </div>
             <p>Здесь будет текст вопроса. Пока что это статическая заглушка для макета.</p>
-            <!-- Теги и просмотры -->
+            <!-- Блок для тегов и просмотров внизу карточки -->
             <div class="d-flex align-items-center gap-3">
                 <div>💬 3</div>
                 <div>👁 15</div>
@@ -32,7 +30,7 @@
     </div>
 </div>
 
-<!-- Ответы -->
+<!-- Разметка для ответов на вопросы -->
 <h5 class="mt-4 mb-3">Ответы</h5>
 
 <div class="card mb-3">
@@ -61,7 +59,7 @@
     </div>
 </div>
 
-<!-- Пагинация -->
+<!-- Пагинация страницы (заглушка) -->
 <nav aria-label="Pagination">
   <ul class="pagination justify-content-center">
     <li class="page-item disabled"><span class="page-link">«</span></li>
