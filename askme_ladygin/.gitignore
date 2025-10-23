@@ -1,7 +1,25 @@
-# --- Python ---
+# --- Django (DB, static, media) ---
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+static_cdn/
+MEDIA_ROOT/
+STATIC_ROOT/
+
+# --- Django translations & local conf ---
+*.pot
+local_settings.py
+
+# --- Python testing/tools ---
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# --- Bytecode caches (already covered, dup-safe) ---
+*.pyc
 __pycache__/
-*.py[cod]
-*$py.class
 
 # --- Virtual environment ---
 venv/
