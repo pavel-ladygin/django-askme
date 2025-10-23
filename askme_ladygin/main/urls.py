@@ -9,4 +9,5 @@ urlpatterns = [
     path("signup/", views.register, name="signup"),
     path("hot/", views.hot, name="hot"),
     path("tag/<slug:tag>/", views.tag, name="tag"),
+    path("profile/", views.edit_profile, name="profile"),
 ]

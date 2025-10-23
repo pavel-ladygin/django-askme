@@ -4,6 +4,15 @@
     <!-- Аватар/оценка -->
     <div class="text-center">
       <img src="{% static 'img/avatar1.png' %}" alt="Аватар" width="50" height="50" class="rounded-circle mb-1">
+      <!-- Блок оценки вопроса -->
+      <div class="vote">
+        <form class="vote-form">
+        <button type="submit" name="direction" value="up" class="vote-button up" aria-label="Голос за">▲</button>
+        <div class="vote-count" data-type="question" data-id="{{ q.id }}">{{ q.score }}</div>
+        <button type="submit" name="direction" value="down" class="vote-button down" aria-label="Голос против">▼</button>
+        </form>
+      </div>
+
       <div class="small text-muted">{{ q.score }}</div>
     </div>
 

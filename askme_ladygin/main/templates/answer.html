@@ -3,6 +3,15 @@
   <div class="card-body d-flex gap-3">
     <div class="text-center">
       <img src="{% static 'img/avatar1.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle mb-1">
+      <!-- Блок оценки ответа  -->
+      <div class="vote">
+        <form class="vote-form">
+          <button type="submit" name="direction" value="up" class="vote-button up" aria-label="Голос за">▲</button>
+          <div class="vote-count" data-type="answer" data-id="{{ a.id }}">{{ a.score }}</div>
+          <button type="submit" name="direction" value="down" class="vote-button down" aria-label="Голос против">▼</button>
+        </form>
+</div>
+
       <div class="small text-muted">{{ a.score }}</div>
     </div>
     <div class="flex-grow-1">

@@ -1,4 +1,58 @@
+.vote {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 44px;
+  user-select: none;
+  vertical-align: top;
+}
 
-nav {
-    height: 10vmin;
+
+.vote-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: .5rem;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: var(--bs-secondary-color);
+  transition: color .15s ease, background-color .15s ease, border-color .15s ease, transform .05s ease;
+}
+
+
+.vote-button:hover {
+  color: var(--bs-emphasis-color);
+  background-color: var(--bs-secondary-bg);
+  border-color: var(--bs-border-color);
+}
+
+.vote-button:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 .2rem rgba(var(--bs-primary-rgb), .2);
+}
+
+
+.vote-button.active {
+  color: var(--bs-warning);
+  border-color: color-mix(in oklab, var(--bs-warning) 35%, transparent);
+  background-color: color-mix(in oklab, var(--bs-warning) 10%, transparent);
+}
+
+
+.vote-button:active {
+  transform: translateY(1px);
+}
+
+/* Счётчик — жирный, нейтральный */
+.vote-count {
+  font-weight: 700;
+  font-size: 14px;
+  margin: 4px 0;
+  color: var(--bs-emphasis-color);
+  min-width: 28px;
+  text-align: center;
 }

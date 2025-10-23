@@ -78,7 +78,7 @@ def question_detail(request, pk):
     
     answers = make_fake_answers(pk, 20, 25)
     answers = sorted(answers, key=lambda a: a["score"], reverse=True)
-    page_obj = paginate(request, answers, 10)
+    page_obj = paginate(request, answers, 5)
     return render(request, "pages/question_detail.html", {"page_obj" : page_obj, "question" : question})
 
 
@@ -108,3 +108,6 @@ def tag(request, tag):
     page_obj = paginate(request, verified_questions, 10)
 
     return render(request, "pages/tag.html", {"page_obj" : page_obj, "current_tag" : tag})
+
+def edit_profile(request):
+    return render(request, "pages/profile.html")

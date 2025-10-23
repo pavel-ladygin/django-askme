@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+<!-- Страница редактирования профиля пользователя -->
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h1 class="h4 mb-4">Редактирование профиля</h1>
+
+          <form>
+            <!-- Изменение аватара пользователя -->
+            <div class="mb-3 text-center">
+              <img
+                src="{% static 'img/logo.png' %}"
+                alt="Аватар"
+                class="rounded-circle border"
+                style="width:80px;height:80px;object-fit:cover;">
+              <div class="form-text">PNG/JPG, до 2 МБ</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="id_avatar" class="form-label">Новый аватар</label>
+              <input type="file" id="id_avatar" name="avatar" accept="image/*" class="form-control">
+            </div>
+
+            <!-- Бланки под изменение данных о пользователе -->
+            <div class="mb-3">
+              <label for="id_display_name" class="form-label">Отображаемое имя</label>
+              <input type="text" id="id_display_name" name="display_name"
+                     class="form-control" maxlength="150" placeholder="Как вас показывать">
+            </div>
+
+            <div class="mb-3">
+              <label for="id_username" class="form-label">Имя пользователя</label>
+              <input type="text" id="id_username" name="username"
+                     class="form-control" required placeholder="Ваше имя">
+            </div>
+
+            <div class="mb-3">
+              <label for="id_email" class="form-label">Email</label>
+              <input type="email" id="id_email" name="email"
+                     class="form-control" required placeholder="Ваш emal">
+            </div>
+
+            <div class="mb-3">
+              <label for="id_bio" class="form-label">О себе</label>
+              <textarea id="id_bio" name="bio" rows="5" class="form-control"
+                        placeholder="Коротко о себе"></textarea>
+              <div class="form-text">Поддерживаются базовые форматирования и ссылки.</div>
+            </div>
+
+            <!-- Нижние кнопки -->
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+              <a href="" class="btn btn-outline-secondary">Сменить пароль</a>
+              <a href="" class="btn btn-link text-decoration-none">Отмена</a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
