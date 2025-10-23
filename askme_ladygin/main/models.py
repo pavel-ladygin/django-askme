@@ -21,10 +21,9 @@ class Tag(models.Model):
 
 class Question(models.Model):
     id = models.BigAutoField(primary_key=True)
-    title = models.CharField("Название вопроса", max_length=225)
+    title = models.CharField("Название вопроса", max_length=225, db_index=True)
     text = models.TextField("Текст вопроса")
-    tags = models.ManyToManyField(Tag, related_name="questions")
-    ansver_count = models.IntegerField("Ответы")
+    tags = models.ManyToManyField(Tag, related_name="questions", blank=True)
     views = models.PositiveIntegerField("Просмотры", default=0)
     score = models.IntegerField("Оценка", default=0, db_index=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="questions")
@@ -49,7 +48,7 @@ class Answer(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     score = models.IntegerField("Оценка")
     is_accepted = models.BooleanField("Продтвержение")
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="questions")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
 
     class Meta:
         constraints = [
@@ -64,19 +63,30 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     avatar = models.URLField(blank=True)
 
+
+class Votes(models.IntegerChoices):
+    """ Наседованный класс для хранения вариантов голоса для ответов и вопросов """
+    UP = 1, "UP"
+    DOWN = -1, "DOWN"
+
+
 class QuestionLike(models.Model):
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="question_likes", )
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="question_likes")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="likes")
+    value = models.SmallIntegerField(choices=Votes.choices, default=Votes.UP)
         
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["user", "answer"], name="unique_user_question_like")
+            models.UniqueConstraint(fields=["user", "question"], name="unique_user_question_like")
         ]
 
 class AnswerLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="answer_likes")
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="answer_likes")
-    
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="likes")
+    value = models.SmallIntegerField(choices=Votes.choices, default=Votes.UP)
+
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["user", "answer"], name="unique_user_answer_like")
