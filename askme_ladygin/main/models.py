@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 
+
+
 class Tag(models.Model):
     name = models.CharField("Название", unique=True, max_length=64)
     slug = models.SlugField("Слаг", unique=True, max_length=64)
