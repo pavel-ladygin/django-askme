@@ -6,51 +6,38 @@ from django.db.models import Q
 
 
 class Tag(models.Model):
-    name = models.CharField("Название", unique=True, max_length=64)
-    slug = models.SlugField("Слаг", unique=True, max_length=64)
+    name = models.CharField(verbose_name="Название", unique=True, max_length=64)
+    slug = models.SlugField(verbose_name="Слаг", unique=True, max_length=64)
 
-'''         "id" : i,
-            "title" : f"Название вопроса номер {i}",
-            "text" : f"Описание вопроса {i}, что то должно быть написано",
-            "tags" : [tags[rnd.randint(0, len(tags)/2)], tags[rnd.randint(len(tags)/2, len(tags)-1)]],
-            "ansver_count" : rnd.randint(0, 10),
-            "views" : rnd.randint(1, 1000),
-            "score" : rnd.randint(-5, 100),
-            "author" : authors[rnd.randint(0, len(authors)-1)],
-            "created" : f"{time[rnd.randint(0, len(time)- 1)]} назад",
-'''
+    def __str__(self):
+            return self.name
+
+
 
 
 class Question(models.Model):
     id = models.BigAutoField(primary_key=True)
-    title = models.CharField("Название вопроса", max_length=225, db_index=True)
-    text = models.TextField("Текст вопроса")
-    tags = models.ManyToManyField(Tag, related_name="questions", blank=True)
-    views = models.PositiveIntegerField("Просмотры", default=0)
-    score = models.IntegerField("Оценка", default=0, db_index=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="questions")
-    created = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(verbose_name="Название вопроса", max_length=225, db_index=True)
+    text = models.TextField(verbose_name="Текст вопроса")
+    tags = models.ManyToManyField(Tag, related_name="questions", blank=True, verbose_name="Теги")
+    views = models.PositiveIntegerField(verbose_name="Просмотры", default=0)
+    score = models.IntegerField(verbose_name="Оценка", default=0, db_index=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="questions", verbose_name="Автор")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
+    def __str__(self):
+        return self.title
 
-
-
-'''         "id" : i,
-            "text" : f"Какой то текст {i}-го ответа на вопрос номер {pk}",
-            "author" : authors[rnd.randint(0, len(authors)-1)],
-            "created" : f"{time[rnd.randint(0, len(time)- 1)]} назад",
-            "score" : rnd.randint(-5, 100),
-            "is_accepted": rnd.choice([True, False])
-'''
 
 
 class Answer(models.Model):
     id = models.BigAutoField(primary_key=True)
-    text = models.TextField("Текст ответа")
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="answers")
-    created = models.DateTimeField(auto_now_add=True)
-    score = models.IntegerField("Оценка")
-    is_accepted = models.BooleanField("Продтвержение")
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
+    text = models.TextField(verbose_name="Текст ответа")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="answers", verbose_name="Автор")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    score = models.IntegerField(verbose_name="Оценка", default=0, db_index=True)
+    is_accepted = models.BooleanField(verbose_name="Продтвержение", default=False)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers", verbose_name="Вопрос")
 
     class Meta:
         constraints = [
@@ -60,10 +47,15 @@ class Answer(models.Model):
                 name="unique_accepted_answer_per_question",
             )
         ]
+    def __str__(self):
+        return f"Ответ '{self.question.title}' от {self.author.username}"
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    avatar = models.URLField(blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile", verbose_name="Пользователь")
+    avatar = models.URLField(blank=True, verbose_name="Аватар")
+
+    def __str__(self):
+        return self.user.username
 
 
 class Votes(models.IntegerChoices):
@@ -74,22 +66,27 @@ class Votes(models.IntegerChoices):
 
 class QuestionLike(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="question_likes", )
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="likes")
-    value = models.SmallIntegerField(choices=Votes.choices, default=Votes.UP)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="question_likes", verbose_name="Пользователь")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="likes", verbose_name="Вопрос")
+    value = models.SmallIntegerField(choices=Votes.choices, default=Votes.UP, verbose_name="Значение голоса")
         
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["user", "question"], name="unique_user_question_like")
         ]
 
+    def __str__(self):
+        return f"Лайк от {self.user.username} для вопроса {self.question.title}"
+
 class AnswerLike(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="answer_likes")
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="likes")
-    value = models.SmallIntegerField(choices=Votes.choices, default=Votes.UP)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="answer_likes", verbose_name="Пользователь")
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name="likes", verbose_name="Ответ")
+    value = models.SmallIntegerField(choices=Votes.choices, default=Votes.UP, verbose_name="Значение голоса")
 
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["user", "answer"], name="unique_user_answer_like")
         ]
+    def __str__(self):
+        return f"Лайк от {self.user.username} для ответа {self.answer.id}"
