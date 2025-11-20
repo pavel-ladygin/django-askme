@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'bootstrap-5.3.8-dist/css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- Шапка базовой страницы -->
     <nav class="navbar navbar-expand-lg bg-light border-bottom px-3">
     <div class="container-fluid">
@@ -46,7 +46,7 @@
     </div>
     </nav>
     <!-- Основная разметка на основе двух столбцов -->
-    <main class="container my-4">
+    <main class="container my-4 flex-grow-1">
         <div class="row">
             <!-- Главная часть с вопросами -->
             <div class="col-lg-8">

@@ -17,7 +17,7 @@ def make_fake_questions(n, seed) -> list:
             "id" : i,
             "title" : f"Название вопроса номер {i}",
             "text" : f"Описание вопроса {i}, что то должно быть написано",
-            "tags" : [tags[rnd.randint(0, len(tags)/2)], tags[rnd.randint(len(tags)/2, len(tags)-1)]],
+            "tags" : [tags[rnd.randint(0, 3)], tags[rnd.randint(3, 7)]],
             "ansver_count" : rnd.randint(0, 10),
             "views" : rnd.randint(1, 1000),
             "score" : rnd.randint(-5, 100),
@@ -45,13 +45,7 @@ def make_fake_answers(pk, n, seed) -> list:
 def paginate(request, obj_list, obj_per_page):
     page_number = request.GET.get("page", 1)
     paginator = Paginator(obj_list, obj_per_page)
-
-    try:
-        page_obj = paginator.page(page_number)
-    except PageNotAnInteger:
-        page_obj = paginator.page(1)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+    page_obj = paginator.get_page(page_number)
     return page_obj
     
 
@@ -61,7 +55,9 @@ def home(request):
     questions = sorted(questions, key=lambda q: q["id"], reverse=True)
 
     page_obj = paginate(request, questions, 10)
-    return render(request,"pages/index.html", {"page_obj" : page_obj})
+    return render(request,"pages/index.html", {
+        "page_obj" : page_obj
+        })
 
 def question_detail(request, pk):
     questions = make_fake_questions(100, 25)

@@ -1,55 +1,54 @@
 <!-- Показываем пагинацию, только если страниц больше одной -->
-{% if page_obj.paginator.num_pages > 1 %} 
-<!-- Берем get-параметры и создаем копию -->
-  {% with params=request.GET.copy %}
-    {% if params.page %}{% templatetag openvariable %} params.pop('page') 
-    {% templatetag closevariable %}
-    {% endif %}
-    {% comment %}Собираем базовый querystring без page{% endcomment %}
-    
-    {% with qs=params.urlencode %}
-      <nav aria-label="Навигация по страницам" class="mt-4">
-        <ul class="pagination justify-content-center mb-0">
-          {# «Предыдущая» #}
-          {% if page_obj.has_previous %}
-            {% with prev=page_obj.previous_page_number %}
-              <li class="page-item">
-                <a class="page-link" href="?{% if qs %}{{ qs }}&{% endif %}page={{ prev }}" aria-label="Предыдущая">«</a>
-              </li>
-            {% endwith %}
-          {% else %}
-            <li class="page-item disabled">
-              <span class="page-link" aria-label="Предыдущая">«</span>
-            </li>
-          {% endif %}
+{% if page_obj.paginator.num_pages > 1 %}
+  <nav aria-label="Навигация по страницам" class="mt-4">
+    <ul class="pagination justify-content-center mb-0">
 
-          {# Номера страниц: выводим все#}
-          {% for n in page_obj.paginator.page_range %}
-            {% if n == page_obj.number %}
-              <li class="page-item active" aria-current="page">
-                <span class="page-link">{{ n }}</span>
-              </li>
-            {% else %}
-              <li class="page-item">
-                <a class="page-link" href="?{% if qs %}{{ qs }}&{% endif %}page={{ n }}">{{ n }}</a>
-              </li>
-            {% endif %}
-          {% endfor %}
+      <!-- «Предыдущая» -->
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ page_obj.previous_page_number }}{% if qs %}&{{ qs }}{% endif %}"
+             aria-label="Предыдущая">
+            «
+          </a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link" aria-label="Предыдущая">«</span>
+        </li>
+      {% endif %}
 
-          {# «Следующая» #}
-          {% if page_obj.has_next %}
-            {% with nxt=page_obj.next_page_number %}
-              <li class="page-item">
-                <a class="page-link" href="?{% if qs %}{{ qs }}&{% endif %}page={{ nxt }}" aria-label="Следующая">»</a>
-              </li>
-            {% endwith %}
-          {% else %}
-            <li class="page-item disabled">
-              <span class="page-link" aria-label="Следующая">»</span>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
-    {% endwith %}
-  {% endwith %}
+      <!-- Номера всех страниц -->
+      {% for n in page_obj.paginator.page_range %}
+        {% if n == page_obj.number %}
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">{{ n }}</span>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link"
+               href="?page={{ n }}{% if qs %}&{{ qs }}{% endif %}">
+              {{ n }}
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      <!-- «Следующая» -->
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ page_obj.next_page_number }}{% if qs %}&{{ qs }}{% endif %}"
+             aria-label="Следующая">
+            »
+          </a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link" aria-label="Следующая">»</span>
+        </li>
+      {% endif %}
+
+    </ul>
+  </nav>
 {% endif %}
