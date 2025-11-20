@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}404 — Страница не найдена{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-center" style="min-height: 60vh;">
+    <div class="text-center">
+      <div style="font-size:96px;line-height:1;">🧭</div>
+      <h1 class="h3 mb-2">Похоже, ты забрёл не туда</h1>
+      <p class="text-muted mb-4">Код ошибки: 404. Такой страницы не существует.</p>
+      <div class="d-flex gap-2 justify-content-center flex-wrap">
+        <a href="/" class="btn btn-primary">На главную</a>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">Вернуться назад</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

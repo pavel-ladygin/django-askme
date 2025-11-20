@@ -1,0 +1,44 @@
+{% load static %}
+
+<article class="card mb-3">
+  <div class="card-body d-flex gap-3">
+    <div class="text-center">
+      <img src="{% static 'img/avatar1.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle mb-1">
+
+      <!-- Блок оценки ответа -->
+      <div class="vote">
+        <form class="vote-form">
+          <button type="submit" name="direction" value="up" class="vote-button up" aria-label="Голос за">▲</button>
+          <div class="vote-count" data-type="answer" data-id="{{ a.id }}">{{ a.score }}</div>
+          <button type="submit" name="direction" value="down" class="vote-button down" aria-label="Голос против">▼</button>
+        </form>
+      </div>
+
+      <div class="small text-muted">{{ a.score }}</div>
+
+      {# Кнопка пометки/отмены правильного ответа #}
+      <form class="mt-2">
+        {% if a.is_accepted %}
+          <button type="submit" name="action" value="unaccept" class="btn btn-outline-danger btn-sm">
+            Отменить правильный
+          </button>
+        {% else %}
+          <button type="submit" name="action" value="accept" class="btn btn-outline-primary btn-sm">
+            Отметить как правильный
+          </button>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="flex-grow-1">
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="small text-muted">от {{ a.author }} • {{ a.created }}</span>
+
+        {% if a.is_accepted %}
+          <span class="badge bg-success">Принят</span>
+        {% endif %}
+      </div>
+      <div>{{ a.text }}</div>
+    </div>
+  </div>
+</article>

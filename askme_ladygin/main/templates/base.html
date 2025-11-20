@@ -11,47 +11,50 @@
     <link rel="stylesheet" href="{% static 'bootstrap-5.3.8-dist/css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
-<body>
-    <!-- Навигация -->
+<body class="d-flex flex-column min-vh-100">
+    <!-- Шапка базовой страницы -->
     <nav class="navbar navbar-expand-lg bg-light border-bottom px-3">
     <div class="container-fluid">
-        <!-- Название сайта -->
-        <a class="navbar-brand fw-bold" href="/">AskMe</a>
 
-        <!-- Поиск (центр или рядом с названием) -->
+
+        <!-- Название сайта -->
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">AskMe</a>
+
+
         <form class="d-flex mx-auto" role="search" onsubmit="return false;">
         <input class="form-control me-2" type="search" placeholder="Поиск..." aria-label="Search">
         <button class="btn btn-outline-primary" type="submit">Найти</button>
         </form>
 
-        <!-- Логотип + авторизация -->
+        <!-- Вариант для неавторизованного пользователя -->
+        <!-- <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">Войти</a>
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Регистрация</a>
+        </div> -->
+        
+        <!-- Альтернативный вариант для авторизованного пользователя: -->
         <div class="d-flex align-items-center gap-2">
-        <img src="{% static 'img/logo.png' %}" alt="Логотип" width="40" height="40" class="rounded-circle border">
-        <a href="/login/" class="btn btn-outline-success btn-sm">Войти</a>
-        <a href="/signup/" class="btn btn-primary btn-sm">Регистрация</a>
+        <a href="{% url 'profile' %}" class="d-inline-block" title="Редактировать профиль" aria-label="Редактировать профиль">
+            <img src="{% static 'img/logo.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle border">
+        </a>
+        <span class="fw-bold">user</span>
+        <a href="" class="btn btn-outline-danger btn-sm">Выйти</a>
         </div>
-        <!--
-        Альтернативный вариант для авторизованного пользователя:
 
-        <div class="d-flex align-items-center gap-2">
-            <img src="{% static 'img/user_avatar.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle border">
-            <span class="fw-bold">Username</span>
-            <a href="/logout/" class="btn btn-outline-danger btn-sm">Выйти</a>
-        </div>
-        -->
+       
 </div>
     </div>
     </nav>
-    <!-- Основная часть страницы -->
-    <main class="container my-4">
+    <!-- Основная разметка на основе двух столбцов -->
+    <main class="container my-4 flex-grow-1">
         <div class="row">
-            <!-- Основная панель -->
+            <!-- Главная часть с вопросами -->
             <div class="col-lg-8">
                 {% block content %}
                 {% endblock %}
             </div>
 
-            <!-- Боковая панель справа -->
+            <!-- Вспомогательная часть с тегами и лучшими пользователями -->
             <div class="col-lg-4">
                 {% block sidebar %}
                 <div class="card mb-3">
@@ -59,11 +62,11 @@
                         Популярные теги
                     </div>
                     <!-- Заглушка под теги -->
-                    <div class="card-body">
-                        <span class="badge bg-secondary me-1 mb-1">Python</span>
-                        <span class="badge bg-secondary me-1 mb-1">Django</span>
-                        <span class="badge bg-secondary me-1 mb-1">Web</span>
-                    </div>
+                        <div class="card-body">
+                        <a href="{% url 'tag' 'python' %}" class="badge bg-secondary me-1 mb-1">Python</a>
+                        <a href="{% url 'tag' 'django' %}" class="badge bg-secondary me-1 mb-1">Django</a>
+                        <a href="{% url 'tag' 'web' %}" class="badge bg-secondary me-1 mb-1">Web</a>
+                        </div>
                 </div>
 
                 <div class="card mb-3">
@@ -72,7 +75,6 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-unstyled mb-0">
-                            <!-- Заглушка под лучших пользователей -->
                             <li>Пользователь1</li>
                             <li>Пользователь2</li>
                             <li>Пользователь3</li>

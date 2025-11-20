@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ question.title }} — AskMe{% endblock %}
+
+{% block content %}
+  <!-- Хлебные крошки и заголовок -->
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Вопросы</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ question.title }}</li>
+        </ol>
+      </nav>
+      <h1 class="h4 mb-0">{{ question.title }}</h1>
+    </div>
+    <a href="{% url 'ask' %}" class="btn btn-primary">Задать вопрос</a>
+
+</div>
+
+<!-- Карточка вопроса -->
+{% include "question.html" with q=question show_title=True %}
+
+<div class="d-flex align-items-center justify-content-between mt-4 mb-2">
+    <h2 class="h5 mb-0" id="answers">Ответы</h2>
+    <span class="text-muted">{{ page_obj.paginator.count }} {{ page_obj.paginator.count|pluralize:"ответ,ответа,ответов" }}</span>
+</div>
+
+  <!-- Список ответов -->
+{% for a in page_obj.object_list %}
+    {% include "answer.html" with a=a %}
+    {% empty %}
+    <div class="text-muted">Ответов пока нет.</div>
+{% endfor %}
+
+
+<!-- Форма для добавления своего ответа (нужно будет проверять авторизацию)-->
+<section id="add-answer" class="mt-5">
+  <h3 class="h5 mb-3">Ваш ответ</h3>
+  <form>
+    <div class="mb-3">
+      <label for="id_text" class="form-label">Текст ответа</label>
+      <textarea id="id_text"
+                name="text"
+                class="form-control"
+                rows="8"
+                required
+                placeholder="Поделитесь решением или идеями по вопросу"></textarea>
+      <div class="form-text">Поддерживаются базовые форматирования и ссылки.</div>
+    </div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Опубликовать ответ</button>
+      <a class="btn btn-outline-secondary">Отмена</a>
+    </div>
+  </form>
+</section>
+
+
+<!-- Пагинация -->
+{% include "paginator.html" with page_obj=page_obj %}
+{% endblock %}
