@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from main.models import Profile, Tag, Question, Answer, QuestionLike, AnswerLike, Votes
 from django.db.models import Sum
 from django.utils.text import slugify
-
+import time
+from django.db import transaction
 
 from faker import Faker
 import random
@@ -15,6 +16,7 @@ class Command(BaseCommand):
         parser.add_argument("ratio", type=int, help="Количество создаваемых пользователей")
 
     def handle(self, *args, **kwargs):
+        start_time = time.time()
         ratio = kwargs["ratio"]
         fake_ru = Faker("ru_RU")
         fake_en = Faker("en_US")
@@ -91,18 +93,32 @@ class Command(BaseCommand):
         # Создание ответов
         answers = []
         self.stdout.write("Создание ответов..")
-        for i in range(answer_cnt):
 
-            answers.append(
-                Answer(
-                    text=fake_ru.paragraph(nb_sentences=3),
-                    author=random.choice(users),
-                    question=random.choice(questions),
-                    is_accepted=random.choice([True, False, False, False, False])
+        for question in questions:
+            num_answers = random.randint(1, 20)  # Случайное количество ответов
+            
+            question_answers = []
+            for i in range(num_answers):
+                question_answers.append(
+                    Answer(
+                        text=fake_ru.paragraph(nb_sentences=3),
+                        author=random.choice(users),
+                        question=question,
+                        is_accepted=False
+                    )
                 )
-            )
-        Answer.objects.bulk_create(answers, batch_size=answer_cnt//10)
-        self.stdout.write(f"Создано ответов: {len(answers)})")
+            
+            # Случайно выбираем один как принятый
+            if random.random() < 0.4:
+                question_answers[random.randint(0, num_answers - 1)].is_accepted = True
+
+            answers.extend(question_answers)
+
+
+        Answer.objects.bulk_create(answers, batch_size=10000)
+
+        self.stdout.write(f"Создано ответов: {len(answers)}")
+
 
         # Создание лайков и дизлайков для вопросов
         self.stdout.write("Создание лайков и дизлайков..")
@@ -117,12 +133,12 @@ class Command(BaseCommand):
                         value=random.choice([Votes.UP, Votes.DOWN])
                     )
                 )
-        QuestionLike.objects.bulk_create(question_votes, batch_size=like_cnt//5)
+        QuestionLike.objects.bulk_create(question_votes, batch_size=like_cnt//13)
 
         # Создание лайков и дизлайков для ответов
         answer_votes = []
         for a in answers:
-            voters = random.sample(users, k=random.randint(0, min(len(users) // 10, 5)))
+            voters = random.sample(users, k=random.randint(0, min(len(users) // 10, 3)))
             for user in voters:
                 answer_votes.append(
                     AnswerLike(
@@ -132,43 +148,49 @@ class Command(BaseCommand):
                     )
                 )
 
-        AnswerLike.objects.bulk_create(answer_votes, batch_size=like_cnt//5)
+        AnswerLike.objects.bulk_create(answer_votes, batch_size=like_cnt//10)
         self.stdout.write(f"Создано лайков и дизлайков: {len(question_votes) + len(answer_votes)})")
 
 
         # Пересчёт рейтинга вопросов и ответов
-        self.stdout.write("Пересчёт рейтинга вопросов и ответов...")
-        Question.objects.update(score=0)  # один UPDATE на всю таблицу
+        @transaction.atomic
+        def recalc_score():
+            self.stdout.write("Пересчёт рейтинга вопросов и ответов...")
+            Question.objects.update(score=0)  # один UPDATE на всю таблицу
 
-        qs = (
-            QuestionLike.objects
-            .values("question_id")
-            .annotate(total=Sum("value"))
-        )
+            qs = (
+                QuestionLike.objects
+                .values("question_id")
+                .annotate(total=Sum("value"))
+            )
 
-        # Словарь id -> score
-        q_scores = {row["question_id"]: row["total"] for row in qs}
+            # Словарь id -> score
+            q_scores = {row["question_id"]: row["total"] for row in qs}
 
-        # Список объектов для bulk_update
-        questions_to_update = [
-            Question(id=qid, score=score)
-            for qid, score in q_scores.items()
-        ]
-        Question.objects.bulk_update(questions_to_update, ["score"], batch_size=1000)
+            # Список объектов для bulk_update
+            questions_to_update = [
+                Question(id=qid, score=score)
+                for qid, score in q_scores.items()
+            ]
+            Question.objects.bulk_update(questions_to_update, ["score"], batch_size=1000)
 
-        # Ответы
-        Answer.objects.update(score=0)
+            # Ответы
+            Answer.objects.update(score=0)
 
-        as_ = (
-            AnswerLike.objects
-            .values("answer_id")
-            .annotate(total=Sum("value"))
-        )
-        a_scores = {row["answer_id"]: row["total"] for row in as_}
-        answers_to_update = [
-            Answer(id=aid, score=score)
-            for aid, score in a_scores.items()
-        ]
-        Answer.objects.bulk_update(answers_to_update, ["score"], batch_size=1000)
+            as_ = (
+                AnswerLike.objects
+                .values("answer_id")
+                .annotate(total=Sum("value"))
+            )
+            a_scores = {row["answer_id"]: row["total"] for row in as_}
+            answers_to_update = [
+                Answer(id=aid, score=score)
+                for aid, score in a_scores.items()
+            ]
+            Answer.objects.bulk_update(answers_to_update, ["score"], batch_size=1000)
+            
+        recalc_score()
 
-        self.stdout.write(self.style.SUCCESS("Генерация данных завершена."))
+        end_time = time.time()
+
+        self.stdout.write(self.style.SUCCESS(f"Генерация данных завершена за {end_time - start_time:.2f} секунд"))
