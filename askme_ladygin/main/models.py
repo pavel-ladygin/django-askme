@@ -95,6 +95,13 @@ class Votes(models.IntegerChoices):
     DOWN = -1, "DOWN"
 
 
+
+class Votes(models.IntegerChoices):
+    """ Наседованный класс для хранения вариантов голоса для ответов и вопросов """
+    UP = 1, "UP"
+    DOWN = -1, "DOWN"
+
+
 class QuestionLike(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="question_likes", verbose_name="Пользователь")
