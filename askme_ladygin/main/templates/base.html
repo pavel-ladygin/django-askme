@@ -30,9 +30,10 @@
         <!-- <div class="d-flex align-items-center gap-2">
         <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">Войти</a>
         <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Регистрация</a>
-        </div> -->
+        </div>
         
         <!-- Альтернативный вариант для авторизованного пользователя: -->
+
         <div class="d-flex align-items-center gap-2">
         <a href="{% url 'profile' %}" class="d-inline-block" title="Редактировать профиль" aria-label="Редактировать профиль">
             <img src="{% static 'img/logo.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle border">
@@ -63,9 +64,13 @@
                     </div>
                     <!-- Заглушка под теги -->
                         <div class="card-body">
-                        <a href="{% url 'tag' 'python' %}" class="badge bg-secondary me-1 mb-1">Python</a>
-                        <a href="{% url 'tag' 'django' %}" class="badge bg-secondary me-1 mb-1">Django</a>
-                        <a href="{% url 'tag' 'web' %}" class="badge bg-secondary me-1 mb-1">Web</a>
+                            {% for tag in popular_tags %}
+                                <a href="{% url 'tag' tag.slug %}" 
+                                class="badge bg-secondary me-1 mb-2">
+                                    {{ tag.name }} 
+                                </a>
+                            {% endfor %}
+ 
                         </div>
                 </div>
 
