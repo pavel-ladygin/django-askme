@@ -4,16 +4,42 @@ from django.db.models import Q
 
 
 
+class QuestionManager(models.Manager):
+    def new(self):
+        return self.get_queryset().order_by("-created")
+    
+    def hot(self):
+        return self.get_queryset().order_by("-score")
+    
+    def by_tag(self, tag_slug):
+        return self.get_queryset().filter(tags__slug = tag_slug).distinct()
+    
+    def by_id(self, pk):
+        return self.get_queryset().filter(id=pk).first()
+
+
+class TagManager(models.Manager):
+    def slug_to_name(self, slug):
+        return self.get_queryset().get(slug=slug).name
+    
+    def popular(self, n):
+        return self.get_queryset().annotate(num_questions=models.Count("questions")).order_by("-num_questions")[:n]
+
+class AnswerManager(models.Manager):
+    def for_question(self, question):
+        return self.get_queryset().filter(question=question).order_by("-score", "-is_accepted")
+
+
 
 class Tag(models.Model):
     name = models.CharField(verbose_name="Название", unique=True, max_length=64)
     slug = models.SlugField(verbose_name="Слаг", unique=True, max_length=64)
 
+    objects = TagManager()
+
     def __str__(self):
             return self.name
-
-
-
+            
 
 class Question(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -25,6 +51,7 @@ class Question(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="questions", verbose_name="Автор")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
+    objects = QuestionManager()
     def __str__(self):
         return self.title
 
@@ -39,6 +66,7 @@ class Answer(models.Model):
     is_accepted = models.BooleanField(verbose_name="Продтвержение", default=False)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers", verbose_name="Вопрос")
 
+    objects = AnswerManager()
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -49,6 +77,9 @@ class Answer(models.Model):
         ]
     def __str__(self):
         return f"Ответ '{self.question.title}' от {self.author.username}"
+    
+
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile", verbose_name="Пользователь")
