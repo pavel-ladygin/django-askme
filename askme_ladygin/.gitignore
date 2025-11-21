@@ -10,8 +10,8 @@ env/
 ..venv/
 
 # --- Environment variables ---
-.env
-*.env
+# .env
+# *.env
 
 # --- IDE / Editor files ---
 .vscode/
