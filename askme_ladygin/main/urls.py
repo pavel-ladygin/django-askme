@@ -10,4 +10,5 @@ urlpatterns = [
     path("hot/", views.hot, name="hot"),
     path("tag/<slug:tag_slug>/", views.tag, name="tag"),
     path("profile/", views.edit_profile, name="profile"),
+    path("user_questions/<user_id>", views.active_users, name = "user_questions")
 ]

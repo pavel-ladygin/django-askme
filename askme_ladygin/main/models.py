@@ -16,6 +16,9 @@ class QuestionManager(models.Manager):
     
     def by_id(self, pk):
         return self.get_queryset().filter(id=pk).first()
+    
+    def top_profiles(sefl, user_id):
+        return sefl.filter(author_id = user_id).order_by("-score")
 
 
 class TagManager(models.Manager):
@@ -29,7 +32,12 @@ class AnswerManager(models.Manager):
     def for_question(self, question):
         return self.get_queryset().filter(question=question).order_by("-score", "-is_accepted")
 
-
+class ProfileManager(models.Manager):
+    def active_users(self, n):
+        return self.select_related("user").annotate(questions_cnt = models.Count("user__questions")).order_by("-questions_cnt")[:n]
+    
+    def id_to_name(self, user_id):
+        return self.get(id = user_id).user
 
 class Tag(models.Model):
     name = models.CharField(verbose_name="Название", unique=True, max_length=64)
@@ -85,6 +93,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile", verbose_name="Пользователь")
     avatar = models.URLField(blank=True, verbose_name="Аватар")
 
+    objects = ProfileManager()
     def __str__(self):
         return self.user.username
 

@@ -62,7 +62,7 @@
                     <div class="card-header">
                         Популярные теги
                     </div>
-                    <!-- Заглушка под теги -->
+                    <!-- Лучшие теги -->
                         <div class="card-body">
                             {% for tag in popular_tags %}
                                 <a href="{% url 'tag' tag.slug %}" 
@@ -78,13 +78,15 @@
                     <div class="card-header">
                         Лучшие пользователи
                     </div>
-                    <div class="card-body">
-                        <ul class="list-unstyled mb-0">
-                            <li>Пользователь1</li>
-                            <li>Пользователь2</li>
-                            <li>Пользователь3</li>
-                        </ul>
-                    </div>
+                    <!-- Лучшие пользователи -->
+                        <div class="card-body">
+                            {% for user in top_users %}
+                                <a href = "{% url 'user_questions' user.user.id%}"
+                                class ="badge bg-secondary me-1 mb-2" >
+                                    {{ user.user}}
+                                </a>
+                            {% endfor %}
+                        </div>
                 </div>
                 {% endblock %}
                 </div>
