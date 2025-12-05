@@ -4,21 +4,27 @@ from django.db.models import Q
 
 
 
+
+
+
 class QuestionManager(models.Manager):
+    def optimaze_list(self):
+        return self.get_queryset().select_related("author").prefetch_related("tags")
+
     def new(self):
-        return self.get_queryset().order_by("-created")
+        return self.optimaze_list().order_by("-created")
     
     def hot(self):
-        return self.get_queryset().order_by("-score")
+        return self.optimaze_list().order_by("-score")
     
     def by_tag(self, tag_slug):
-        return self.get_queryset().filter(tags__slug = tag_slug).distinct()
+        return self.optimaze_list().filter(tags__slug = tag_slug).distinct()
     
     def by_id(self, pk):
-        return self.get_queryset().filter(id=pk).first()
+        return self.optimaze_list().filter(id=pk).first()
     
     def top_profiles(sefl, user_id):
-        return sefl.filter(author_id = user_id).order_by("-score")
+        return sefl.optimaze_list().filter(author_id = user_id).order_by("-score")
 
 
 class TagManager(models.Manager):
@@ -30,7 +36,7 @@ class TagManager(models.Manager):
 
 class AnswerManager(models.Manager):
     def for_question(self, question):
-        return self.get_queryset().filter(question=question).order_by("-score", "-is_accepted")
+        return self.get_queryset().filter(question=question).order_by("-score", "-is_accepted").select_related("author")
 
 class ProfileManager(models.Manager):
     def active_users(self, n):

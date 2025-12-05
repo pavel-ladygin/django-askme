@@ -32,7 +32,6 @@ def home(request):
 
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
-    question = Question.objects.by_id(pk)
     answers = Answer.objects.for_question(question)
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
@@ -83,11 +82,11 @@ def hot(request):
 
 
 def active_users(request, user_id):
+    user = get_object_or_404(Profile, id=user_id).user
     questions = Question.objects.top_profiles(user_id)
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     page_obj = paginate(request,questions, 10)
-    user = Profile.objects.id_to_name(user_id)
     return render(request, "pages/user_questions.html", {
         "page_obj" : page_obj,
         "popular_tags" : popular_tags,
@@ -102,7 +101,6 @@ def tag(request, tag_slug):
     top_users = Profile.objects.active_users(10)
     questions = Question.objects.by_tag(tag_slug)
     page_obj = paginate(request, questions, 10)
-    tag = Tag.objects.slug_to_name(tag_slug)
 
     return render(request, "pages/tag.html",{
         "page_obj" : page_obj,

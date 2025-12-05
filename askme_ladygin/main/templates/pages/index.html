@@ -20,7 +20,7 @@
 </div>
 
 <!-- Подключение карточек вопросов -->
-{% for q in page_obj.object_list %}  {# ✅ БЕЗ .all #}
+{% for q in page_obj.object_list %}
     {% include "question.html" with q=q %}
 {% empty %}
     <div class="text-muted">Вопросов пока нет.</div>
