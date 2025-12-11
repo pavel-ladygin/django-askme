@@ -1,8 +1,9 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render,redirect, HttpResponse
 from .models import Question, Tag, Answer  , Profile
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
-
+from .forms import LoginForm
+from django.contrib.auth import login, logout
 
 
 def paginate(request, obj_list, obj_per_page):
@@ -53,13 +54,29 @@ def ask(request):
         "top_users" : top_users
         })
 
-def login(request):
+def login_view(request):
+    continue_url = request.GET.get("continue", "/")
+    if request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.cleaned_data["user"]
+            login(request, user)
+            return redirect(continue_url)
+    else:
+        form = LoginForm()
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     return render(request, "pages/login.html",{
         "popular_tags" : popular_tags,
-        "top_users" : top_users
+        "top_users" : top_users,
+        "form" : form,
+        "continue" : continue_url
         })
+
+def logout_view(request):
+    continue_url = request.GET.get("continue", "/ask/")
+    logout(request)
+    return redirect(continue_url)
 
 def register(request):
     popular_tags = Tag.objects.popular(10)

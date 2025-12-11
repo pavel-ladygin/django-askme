@@ -25,24 +25,27 @@
         <input class="form-control me-2" type="search" placeholder="Поиск..." aria-label="Search">
         <button class="btn btn-outline-primary" type="submit">Найти</button>
         </form>
-
-        <!-- Вариант для неавторизованного пользователя -->
-        <!-- <div class="d-flex align-items-center gap-2">
-        <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">Войти</a>
-        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Регистрация</a>
-        </div>
         
-        <!-- Альтернативный вариант для авторизованного пользователя: -->
-
+        {% if user.is_authenticated %}
+        <!-- Вариант для неавторизованного пользователя -->
         <div class="d-flex align-items-center gap-2">
         <a href="{% url 'profile' %}" class="d-inline-block" title="Редактировать профиль" aria-label="Редактировать профиль">
             <img src="{% static 'img/logo.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle border">
         </a>
         <span class="fw-bold">user</span>
-        <a href="" class="btn btn-outline-danger btn-sm">Выйти</a>
+        <a href=" {% url 'logout' %}" class="btn btn-outline-danger btn-sm">Выйти</a>
         </div>
+        {% else %}
+        <!-- Альтернативный вариант для авторизованного пользователя: -->
 
-       
+        <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">Войти</a>
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Регистрация</a>
+        </div>
+            
+        {% endif %}
+
+
 </div>
     </div>
     </nav>
