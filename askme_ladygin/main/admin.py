@@ -38,7 +38,7 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'avatar']
+    list_display = ['id','nickname' ,"bio" ,'user', 'avatar']
 
 @admin.register(AnswerLike)
 class AnswerLikeAdmin(admin.ModelAdmin):

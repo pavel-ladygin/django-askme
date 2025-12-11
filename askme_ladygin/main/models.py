@@ -98,7 +98,8 @@ class Answer(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile", verbose_name="Пользователь")
     avatar = models.URLField(blank=True, verbose_name="Аватар")
-
+    nickname = models.CharField("Обображаемое имя", auto_created=True, default="", max_length=25)
+    bio = models.TextField(verbose_name="О себе", blank=True)
     objects = ProfileManager()
     def __str__(self):
         return self.user.username

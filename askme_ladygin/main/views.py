@@ -2,7 +2,8 @@ from django.shortcuts import render,redirect, HttpResponse
 from .models import Question, Tag, Answer  , Profile
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
-from .forms import LoginForm
+from .forms import LoginForm, SingupForm, EditProfileForm
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 
 
@@ -64,13 +65,13 @@ def login_view(request):
             return redirect(continue_url)
     else:
         form = LoginForm()
+
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     return render(request, "pages/login.html",{
         "popular_tags" : popular_tags,
         "top_users" : top_users,
-        "form" : form,
-        "continue" : continue_url
+        "form" : form
         })
 
 def logout_view(request):
@@ -78,12 +79,24 @@ def logout_view(request):
     logout(request)
     return redirect(continue_url)
 
-def register(request):
+def singup(request):
+    continue_ulr = request.GET.get("continue", "/")
+    if request.method == "POST":
+        form = SingupForm(data = request.POST)
+        if form.is_valid():
+            user = form.save()
+            Profile.objects.create(user=user)
+            login(request, user)
+            return redirect(continue_ulr)
+    else:
+        form = SingupForm()
+
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     return render(request, "pages/register.html",{
         "popular_tags" : popular_tags,
-        "top_users" : top_users
+        "top_users" : top_users,
+        "form" : form
         })
 
 def hot(request):
@@ -127,11 +140,19 @@ def tag(request, tag_slug):
         })
     
 
-
+@login_required
 def edit_profile(request):
+    if request.method == "POST":
+        form = EditProfileForm(request.user, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("/profile")
+    else:
+        form = EditProfileForm(request.user)
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     return render(request, "pages/profile.html",{
         "popular_tags" : popular_tags,
-        "top_users" : top_users
+        "top_users" : top_users,
+        "form" : form
         })
