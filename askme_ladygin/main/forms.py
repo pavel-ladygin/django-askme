@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import User, Profile
+from .models import User, Profile, Question, Answer
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Логин", max_length=25)
@@ -82,3 +82,54 @@ class EditProfileForm(forms.Form):
         profile.save()
         
         return self.user
+
+from django import forms
+from .models import Question
+
+
+class QuestionForm(forms.ModelForm):
+    tags_input = forms.CharField(
+        label='Теги',
+        required=False,
+        help_text='Введите теги через запятую'
+    )
+    
+    class Meta:
+        model = Question
+        fields = ['title', 'text']
+        labels = {
+            'title': 'Заголовок',
+            'text': 'Текст вопроса',
+        }
+    
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        if len(title) < 5:
+            raise forms.ValidationError('Заголовок должен быть не короче 5 символов')
+        if len(title) > 100:
+            raise forms.ValidationError('Заголовок слишком длинный (максимум 100 символов)')
+        return title
+    
+    def clean_text(self):
+        text = self.cleaned_data.get('text')
+        if len(text) < 20:
+            raise forms.ValidationError('Текст вопроса должен быть не короче 20 символов')
+        return text
+    
+    from django import forms
+from .models import Answer
+
+
+class AnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ['text']
+        labels = {
+            'text': '',
+        }
+    
+    def clean_text(self):
+        text = self.cleaned_data.get('text')
+        if len(text) < 10:
+            raise forms.ValidationError('Ответ должен быть не короче 10 символов')
+        return text
