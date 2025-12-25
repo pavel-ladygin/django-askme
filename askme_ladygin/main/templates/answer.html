@@ -1,8 +1,9 @@
 {% load static %}
 
-<article class="card mb-3 answer" id="answer-{{ a.id }}">
+<article class="card mb-3 answer {% if a.is_accepted %}accepted-answer{% endif %}" id="answer-{{ a.id }}">
   <div class="card-body d-flex gap-3">
     <div class="text-center">
+      
       <!-- Отображение аватара пользователя -->
       {% if a.author.profile.avatar %}
         <img src="{{ a.author.profile.avatar.url }}" alt="Аватар" width="40" height="40" class="rounded-circle mb-1">
@@ -27,7 +28,7 @@
         {% endif %}
       </div>
 
-      <!-- Кнопка отметки "правильный ответ" (только для автора вопроса) -->
+      <!-- Кнопка отметки правильный ответ  -->
       {% if question.author == user %}
         {% if not a.is_accepted %}
           {% if not has_accepted_answer %}
@@ -40,6 +41,12 @@
             Правильный ответ
           </button>
         {% endif %}
+      {% endif %}
+
+      {% if a.is_accepted %}
+        <div class="small text-success mt-1">
+          Правильный ответ
+        </div>
       {% endif %}
     </div>
 

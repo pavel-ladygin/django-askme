@@ -47,7 +47,7 @@
   transform: translateY(1px);
 }
 
-/* Счётчик — жирный, нейтральный */
+
 .vote-count {
   font-weight: 700;
   font-size: 14px;
@@ -55,4 +55,7 @@
   color: var(--bs-emphasis-color);
   min-width: 28px;
   text-align: center;
+}
+.answer.accepted-answer {
+    border: 1px solid #28a745; 
 }

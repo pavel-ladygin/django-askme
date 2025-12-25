@@ -1,4 +1,3 @@
-// Функция для получения токена из meta-тега
 function getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 }
@@ -85,10 +84,8 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    // Скрываем все кнопки "Отметить как правильный"
+                    btn.removeClass('btn-outline-primary').addClass('btn-success').text('Правильный ответ').removeClass('mark-correct-btn').addClass('unmark-correct-btn');
                     $('.mark-correct-btn').hide();
-                    // Меняем текущую кнопку на зелёную
-                    btn.removeClass('btn-outline-primary').addClass('btn-success').text('✅ Правильный ответ (нажмите, чтобы снять)').removeClass('mark-correct-btn').addClass('unmark-correct-btn');
                 }
             },
             error: function(xhr) {

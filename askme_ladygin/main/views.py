@@ -67,7 +67,7 @@ def question_detail(request, pk):
         "popular_tags": popular_tags,
         "top_users": top_users,
         "form": form,
-        "has_accepted_answer": has_accepted_answer,  # Передаём в шаблон
+        "has_accepted_answer": has_accepted_answer,
     })
 
 
