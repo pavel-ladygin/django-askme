@@ -43,7 +43,13 @@ def home(request):
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
 
-    # Проверяем, есть ли уже правильный ответ
+    viewed_questions = request.session.get('viewed_questions', [])
+    if question.id not in viewed_questions:
+        question.views += 1
+        question.save(update_fields=['views'])
+        viewed_questions.append(question.id)
+        request.session['viewed_questions'] = viewed_questions
+
     has_accepted_answer = question.answers.filter(is_accepted=True).exists()
 
     if request.method == 'POST' and request.user.is_authenticated:
@@ -206,17 +212,18 @@ def edit_profile(request):
         "form" : form
         })
 
-@login_required
 @require_POST
 def toggle_question_vote(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
     try:
         question_id = int(request.POST.get('question_id'))
-        vote_type = request.POST.get('type') 
+        vote_type = request.POST.get('type')
     except (TypeError, ValueError):
         return JsonResponse({'error': 'Invalid data'}, status=400)
 
     question = get_object_or_404(Question, id=question_id)
-
 
     like, created = QuestionLike.objects.get_or_create(
         user=request.user,
@@ -226,7 +233,6 @@ def toggle_question_vote(request):
 
     if not created:
         if (like.value == Votes.UP and vote_type == 'like') or (like.value == Votes.DOWN and vote_type == 'dislike'):
-
             score_change = -like.value
             like.delete()
         else:
@@ -245,9 +251,11 @@ def toggle_question_vote(request):
     })
 
 
-@login_required
 @require_POST
 def toggle_answer_vote(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
     try:
         answer_id = int(request.POST.get('answer_id'))
         vote_type = request.POST.get('type')
@@ -281,9 +289,11 @@ def toggle_answer_vote(request):
         'new_score': answer.score
     })
 
-@login_required
 @require_POST
 def mark_answer_correct(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
     try:
         answer_id = int(request.POST.get('answer_id'))
     except (TypeError, ValueError):
@@ -303,9 +313,11 @@ def mark_answer_correct(request):
         'success': True
     })
 
-@login_required
 @require_POST
 def unmark_answer_correct(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
     try:
         answer_id = int(request.POST.get('answer_id'))
     except (TypeError, ValueError):
