@@ -21,7 +21,7 @@
 </div>
 
 <!-- Карточка вопроса -->
-{% include "question.html" with q=question show_title=True %}
+{% include "question.html" with q=question %}
 
 <div class="d-flex align-items-center justify-content-between mt-4 mb-2">
     <h2 class="h5 mb-0" id="answers">Ответы</h2>
@@ -80,7 +80,6 @@
   </div>
 </div>
 {% endif %}
-
 
 <!-- Пагинация -->
 {% include "paginator.html" with page_obj=page_obj %}

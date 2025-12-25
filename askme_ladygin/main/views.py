@@ -1,11 +1,13 @@
-from django.shortcuts import render,redirect, HttpResponse
-from .models import Question, Tag, Answer  , Profile
+from django.shortcuts import render,redirect
+from .models import Question, Tag, Answer, Profile, QuestionLike, AnswerLike, Votes
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from .forms import LoginForm, SingupForm, EditProfileForm, QuestionForm, AnswerForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.utils.text import slugify
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 try:
     from django.utils.http import is_safe_url
 except ImportError:
@@ -41,6 +43,9 @@ def home(request):
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
 
+    # Проверяем, есть ли уже правильный ответ
+    has_accepted_answer = question.answers.filter(is_accepted=True).exists()
+
     if request.method == 'POST' and request.user.is_authenticated:
         form = AnswerForm(data=request.POST)
         if form.is_valid():
@@ -48,7 +53,7 @@ def question_detail(request, pk):
             answer.author = request.user
             answer.question = question
             answer.save()
-            return redirect(reverse('question_detail', args=[question.id]))
+            return redirect(reverse('question', args=[question.id]))
     else:
         form = AnswerForm()
 
@@ -62,6 +67,7 @@ def question_detail(request, pk):
         "popular_tags": popular_tags,
         "top_users": top_users,
         "form": form,
+        "has_accepted_answer": has_accepted_answer,  # Передаём в шаблон
     })
 
 
@@ -81,7 +87,7 @@ def ask(request):
                     tag_slug = slugify(tag_name)
                     tag, created = Tag.objects.get_or_create(slug = tag_slug, name=tag_name)
                     question.tags.add(tag)
-            return redirect(reverse('question_detail', args=[question.id]))
+            return redirect(reverse('question', args=[question.id]))
     else:
         form = QuestionForm()
     popular_tags = Tag.objects.popular(10)
@@ -199,3 +205,123 @@ def edit_profile(request):
         "top_users" : top_users,
         "form" : form
         })
+
+@login_required
+@require_POST
+def toggle_question_vote(request):
+    try:
+        question_id = int(request.POST.get('question_id'))
+        vote_type = request.POST.get('type') 
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid data'}, status=400)
+
+    question = get_object_or_404(Question, id=question_id)
+
+
+    like, created = QuestionLike.objects.get_or_create(
+        user=request.user,
+        question=question,
+        defaults={'value': Votes.UP if vote_type == 'like' else Votes.DOWN}
+    )
+
+    if not created:
+        if (like.value == Votes.UP and vote_type == 'like') or (like.value == Votes.DOWN and vote_type == 'dislike'):
+
+            score_change = -like.value
+            like.delete()
+        else:
+            score_change = (Votes.DOWN if like.value == Votes.UP else Votes.UP) - like.value
+            like.value = Votes.DOWN if like.value == Votes.UP else Votes.UP
+            like.save()
+    else:
+        score_change = like.value
+
+    question.score += score_change
+    question.save()
+
+    return JsonResponse({
+        'success': True,
+        'new_score': question.score
+    })
+
+
+@login_required
+@require_POST
+def toggle_answer_vote(request):
+    try:
+        answer_id = int(request.POST.get('answer_id'))
+        vote_type = request.POST.get('type')
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid data'}, status=400)
+
+    answer = get_object_or_404(Answer, id=answer_id)
+
+    like, created = AnswerLike.objects.get_or_create(
+        user=request.user,
+        answer=answer,
+        defaults={'value': Votes.UP if vote_type == 'like' else Votes.DOWN}
+    )
+
+    if not created:
+        if (like.value == Votes.UP and vote_type == 'like') or (like.value == Votes.DOWN and vote_type == 'dislike'):
+            score_change = -like.value
+            like.delete()
+        else:
+            score_change = (Votes.DOWN if like.value == Votes.UP else Votes.UP) - like.value
+            like.value = Votes.DOWN if like.value == Votes.UP else Votes.UP
+            like.save()
+    else:
+        score_change = like.value
+
+    answer.score += score_change
+    answer.save()
+
+    return JsonResponse({
+        'success': True,
+        'new_score': answer.score
+    })
+
+@login_required
+@require_POST
+def mark_answer_correct(request):
+    try:
+        answer_id = int(request.POST.get('answer_id'))
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid data'}, status=400)
+
+    answer = get_object_or_404(Answer, id=answer_id)
+
+    if answer.question.author != request.user:
+        return JsonResponse({'error': 'Only author can mark correct answer'}, status=403)
+
+    Answer.objects.filter(question=answer.question, is_accepted=True).update(is_accepted=False)
+
+    answer.is_accepted = True
+    answer.save()
+
+    return JsonResponse({
+        'success': True
+    })
+
+@login_required
+@require_POST
+def unmark_answer_correct(request):
+    try:
+        answer_id = int(request.POST.get('answer_id'))
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid data'}, status=400)
+
+    answer = get_object_or_404(Answer, id=answer_id)
+
+    if answer.question.author != request.user:
+        return JsonResponse({'error': 'Only author can unmark correct answer'}, status=403)
+
+    if not answer.is_accepted:
+        return JsonResponse({'error': 'Answer is not marked as correct'}, status=400)
+
+    answer.is_accepted = False
+    answer.save()
+
+    return JsonResponse({
+        'success': True
+    })
