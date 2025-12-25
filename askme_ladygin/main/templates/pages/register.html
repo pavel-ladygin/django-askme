@@ -30,7 +30,9 @@
                 maxlength="50">
             {% if form.username.errors %}
             <div class="invalid-feedback">
-                Поле обязательно для заполнения.
+                {% for error in form.username.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
             {% endif %}
         </div>
@@ -48,10 +50,11 @@
                 value=" {{ form.email.value|default:'' }} "
                 placeholder="Введите email" 
                 maxlength="100">
-
             {% if form.email.errors %}
             <div class="invalid-feedback">
-                Введите корректный email.
+                {% for error in form.email.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
             {% endif %}
         </div>
@@ -69,10 +72,12 @@
                    placeholder="Введите пароль" maxlength="50">
 
             {% if form.password1.errors %}
-            <div class="invalid-feedback">
-                Пароль обязателен.
+                <div class="invalid-feedback">
+                    {% for error in form.password1.errors %}
+                        {{ error }}
+                    {% endfor %}
             </div>
-            {% endif %}
+            {% endif %} 
         </div>
 
         <!-- Поле для подтверждения пароля -->
@@ -87,12 +92,13 @@
                 name="password2"
                 placeholder="Повторите пароль"
                 maxlength="50">
-
             {% if form.password2.errors %}
             <div class="invalid-feedback">
-                Пароли должны совпадать.
+                {% for error in form.password2.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
-            {% endif %}
+            {% endif %} 
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>

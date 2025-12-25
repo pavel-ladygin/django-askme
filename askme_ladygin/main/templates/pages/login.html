@@ -31,7 +31,9 @@
                    >
             {% if form.username.errors %}
             <div class="invalid-feedback">
-                Поле обязательно для заполнения.
+                {% for error in form.username.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
             {% endif %}
         </div>
@@ -51,7 +53,9 @@
                 >
             {% if form.password.errors %}
             <div class="invalid-feedback">
-                Поле обязательно для заполнения.
+                {% for error in form.password.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
             {% endif %}
         </div>

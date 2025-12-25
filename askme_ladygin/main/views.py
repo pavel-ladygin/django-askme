@@ -6,6 +6,11 @@ from .forms import LoginForm, SingupForm, EditProfileForm, QuestionForm, AnswerF
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.utils.text import slugify
+try:
+    from django.utils.http import is_safe_url
+except ImportError:
+    from django.utils.http import url_has_allowed_host_and_scheme as is_safe_url
+from django.urls import reverse
 
 
 def paginate(request, obj_list, obj_per_page):
@@ -43,7 +48,7 @@ def question_detail(request, pk):
             answer.author = request.user
             answer.question = question
             answer.save()
-            return redirect(f'/question/{question.id}/')
+            return redirect(reverse('question_detail', args=[question.id]))
     else:
         form = AnswerForm()
 
@@ -76,7 +81,7 @@ def ask(request):
                     tag_slug = slugify(tag_name)
                     tag, created = Tag.objects.get_or_create(slug = tag_slug, name=tag_name)
                     question.tags.add(tag)
-            return redirect(f'/question/{question.id}/')
+            return redirect(reverse('question_detail', args=[question.id]))
     else:
         form = QuestionForm()
     popular_tags = Tag.objects.popular(10)
@@ -89,6 +94,8 @@ def ask(request):
 
 def login_view(request):
     continue_url = request.GET.get("next", "/")
+    if continue_url and not is_safe_url(continue_url, allowed_hosts={request.get_host()}):
+        continue_url = "/"
     if request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.is_valid():
@@ -108,18 +115,22 @@ def login_view(request):
 
 def logout_view(request):
     continue_url = request.GET.get("next", "/")
+    if continue_url and not is_safe_url(continue_url, allowed_hosts={request.get_host()}):
+        continue_url = "/"
     logout(request)
     return redirect(continue_url)
 
 def singup(request):
-    continue_ulr = request.GET.get("next", "/")
+    continue_url = request.GET.get("next", "/")
+    if continue_url and not is_safe_url(continue_url, allowed_hosts={request.get_host()}):
+        continue_url = "/"
     if request.method == "POST":
         form = SingupForm(data = request.POST)
         if form.is_valid():
             user = form.save()
             Profile.objects.create(user=user)
             login(request, user)
-            return redirect(continue_ulr)
+            return redirect(continue_url)
     else:
         form = SingupForm()
 

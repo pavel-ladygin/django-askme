@@ -69,18 +69,17 @@ class EditProfileForm(forms.Form):
         self.user.username = self.cleaned_data['username']
         self.user.email = self.cleaned_data['email']
         self.user.save()
-        
+
         profile, created = Profile.objects.get_or_create(user=self.user)
         profile.nickname = self.cleaned_data.get('nickname', '')
-        
+
         if hasattr(profile, 'bio'):
             profile.bio = self.cleaned_data.get('bio', '')
-        
+
         if self.cleaned_data.get('avatar'):
             profile.avatar = self.cleaned_data['avatar']
-        
         profile.save()
-        
+
         return self.user
 
 from django import forms
