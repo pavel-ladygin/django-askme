@@ -19,11 +19,11 @@
       {# Кнопка пометки/отмены правильного ответа #}
       <form class="mt-2">
         {% if a.is_accepted %}
-          <button type="submit" name="action" value="unaccept" class="btn btn-outline-danger btn-sm">
+          <button type="submit" name="action" value="unaccept" class="btn btn-outline-danger btn-sm" style="min-width: 150x; max-width: 150px;">
             Отменить правильный
           </button>
         {% else %}
-          <button type="submit" name="action" value="accept" class="btn btn-outline-primary btn-sm">
+          <button type="submit" name="action" value="accept" class="btn btn-outline-primary btn-sm" style="min-width: 150px; max-width: 150px;">
             Отметить как правильный
           </button>
         {% endif %}

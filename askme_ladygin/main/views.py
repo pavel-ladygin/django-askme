@@ -1,8 +1,16 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render,redirect, HttpResponse
 from .models import Question, Tag, Answer  , Profile
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
-
+from .forms import LoginForm, SingupForm, EditProfileForm, QuestionForm, AnswerForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout
+from django.utils.text import slugify
+try:
+    from django.utils.http import is_safe_url
+except ImportError:
+    from django.utils.http import url_has_allowed_host_and_scheme as is_safe_url
+from django.urls import reverse
 
 
 def paginate(request, obj_list, obj_per_page):
@@ -32,41 +40,106 @@ def home(request):
 
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
+
+    if request.method == 'POST' and request.user.is_authenticated:
+        form = AnswerForm(data=request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.author = request.user
+            answer.question = question
+            answer.save()
+            return redirect(reverse('question_detail', args=[question.id]))
+    else:
+        form = AnswerForm()
+
     answers = Answer.objects.for_question(question)
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     page_obj = paginate(request, answers, 5)
     return render(request, "pages/question_detail.html", {
-        "page_obj" : page_obj,
-        "question" : question,
-        "popular_tags" : popular_tags,
-        "top_users" : top_users
-        })
+        "page_obj": page_obj,
+        "question": question,
+        "popular_tags": popular_tags,
+        "top_users": top_users,
+        "form": form,
+    })
 
 
-
+@login_required
 def ask(request):
+    if request.method == "POST":
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.author = request.user
+            question.save()
+            # Обработка тегов из поля ввода тегов
+            tags_input = form.cleaned_data.get('tags_input', '')
+            if tags_input:
+                tag_names = [name.strip().lower() for name in tags_input.split(',') if name.strip()]
+                for tag_name in tag_names:
+                    tag_slug = slugify(tag_name)
+                    tag, created = Tag.objects.get_or_create(slug = tag_slug, name=tag_name)
+                    question.tags.add(tag)
+            return redirect(reverse('question_detail', args=[question.id]))
+    else:
+        form = QuestionForm()
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     return render(request, "pages/ask.html",{
         "popular_tags" : popular_tags,
-        "top_users" : top_users
+        "top_users" : top_users,
+        "form" : form
         })
 
-def login(request):
+def login_view(request):
+    continue_url = request.GET.get("next", "/")
+    if continue_url and not is_safe_url(continue_url, allowed_hosts={request.get_host()}):
+        continue_url = "/"
+    if request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.cleaned_data["user"]
+            login(request, user)
+            return redirect(continue_url)
+    else:
+        form = LoginForm()
+
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     return render(request, "pages/login.html",{
         "popular_tags" : popular_tags,
-        "top_users" : top_users
+        "top_users" : top_users,
+        "form" : form
         })
 
-def register(request):
+def logout_view(request):
+    continue_url = request.GET.get("next", "/")
+    if continue_url and not is_safe_url(continue_url, allowed_hosts={request.get_host()}):
+        continue_url = "/"
+    logout(request)
+    return redirect(continue_url)
+
+def singup(request):
+    continue_url = request.GET.get("next", "/")
+    if continue_url and not is_safe_url(continue_url, allowed_hosts={request.get_host()}):
+        continue_url = "/"
+    if request.method == "POST":
+        form = SingupForm(data = request.POST)
+        if form.is_valid():
+            user = form.save()
+            Profile.objects.create(user=user)
+            login(request, user)
+            return redirect(continue_url)
+    else:
+        form = SingupForm()
+
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     return render(request, "pages/register.html",{
         "popular_tags" : popular_tags,
-        "top_users" : top_users
+        "top_users" : top_users,
+        "form" : form
         })
 
 def hot(request):
@@ -110,11 +183,19 @@ def tag(request, tag_slug):
         })
     
 
-
+@login_required
 def edit_profile(request):
+    if request.method == "POST":
+        form = EditProfileForm(request.user, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("/profile")
+    else:
+        form = EditProfileForm(request.user)
     popular_tags = Tag.objects.popular(10)
     top_users = Profile.objects.active_users(10)
     return render(request, "pages/profile.html",{
         "popular_tags" : popular_tags,
-        "top_users" : top_users
+        "top_users" : top_users,
+        "form" : form
         })
