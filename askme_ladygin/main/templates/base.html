@@ -10,8 +10,10 @@
     </title>
     <link rel="stylesheet" href="{% static 'bootstrap-5.3.8-dist/css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-</head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
 <body class="d-flex flex-column min-vh-100">
+    {% csrf_token %}
     <!-- Шапка базовой страницы -->
     <nav class="navbar navbar-expand-lg bg-light border-bottom px-3">
     <div class="container-fluid">
@@ -103,7 +105,18 @@
         &copy; 2025 AskMe. Все права защищены.
     </div>
 </footer>
-<script src="{% static 'bootstrap-5.3.8-dist/js/bootstrap.bundle.js' %}"></script>
 
+<script>
+    
+// Глобальные переменные с URL
+window.djangoUrls = {
+    toggle_question_vote: "{% url 'toggle_question_vote' %}",
+    toggle_answer_vote: "{% url 'toggle_answer_vote' %}",
+    mark_answer_correct: "{% url 'mark_answer_correct' %}",
+    unmark_answer_correct: "{% url 'unmark_answer_correct' %}",
+};
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/votes.js' %}"></script>
 </body>
 </html>

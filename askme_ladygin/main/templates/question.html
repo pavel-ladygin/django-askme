@@ -2,28 +2,39 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex">
-            <!-- Рейтинг -->
+            <!-- Рейтинг с кнопками AJAX -->
             <div class="me-3 text-center">
-                <button class="btn btn-sm">▲</button>
-                <div class="fw-bold">{{ q.score }}</div>
-                <button class="btn btn-sm">▼</button>
+                <div class="vote">
+                    {% if user.is_authenticated %}
+                    <button type="button" class="vote-button up like-btn" data-question-id="{{ q.id }}" data-type="like" aria-label="Голос за">▲</button>
+                    {% else %}
+                    <button type="button" class="vote-button up" disabled aria-label="Голос за">▲</button>
+                    {% endif %}
+
+                    <div class="vote-count" id="score-{{ q.id }}">{{ q.score }}</div>
+
+                    {% if user.is_authenticated %}
+                    <button type="button" class="vote-button down dislike-btn" data-question-id="{{ q.id }}" data-type="dislike" aria-label="Голос против">▼</button>
+                    {% else %}
+                    <button type="button" class="vote-button down" disabled aria-label="Голос против">▼</button>
+                    {% endif %}
+                </div>
             </div>
-            
+
             <!-- Содержимое -->
             <div class="flex-grow-1">
                 <h5>
                     <a href="{% url 'question' q.id %}" class="text-decoration-none text-dark">{{ q.title }}</a>
                 </h5>
                 <p class="text-muted">{{ q.text|truncatewords:20 }}</p>
-                
+
                 <!-- Метаинформация -->
                 <div class="small text-muted">
                     <span>Автор: {{ q.author.username }}</span>
                     <span class="ms-2">{{ q.created|date:"d.m.Y H:i" }}</span>
-                    <span class="ms-2">💬 {{ q.answers_count }}</span>
                     <span class="ms-2">👁 {{ q.views }}</span>
                 </div>
-                
+
                 <!-- Теги -->
                 <div class="mt-2">
                     {% for tag in q.tags.all %}
