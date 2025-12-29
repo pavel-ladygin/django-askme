@@ -7,6 +7,59 @@ __pycache__/
 venv/
 env/
 .venv/
+..venv/
+
+# --- Environment variables ---
+# .env
+# *.env
+
+# --- IDE / Editor files ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+
+# --- Build / Distribution ---
+build/
+dist/
+*.egg-info/
+
+# --- Logs ---
+*.log
+
+# --- Jupyter / IPython ---
+.ipynb_checkpoints/
+
+# --- Django (DB, static, media) ---
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+static_cdn/
+MEDIA_ROOT/
+STATIC_ROOT/
+
+# --- Django translations & local conf ---
+*.pot
+local_settings.py
+
+# --- Python testing/tools ---
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# --- Bytecode caches (already covered, dup-safe) ---
+*.pyc
+__pycache__/
+
+# --- Virtual environment ---
+venv/
+env/
+.venv/
 
 # --- Environment variables ---
 .env

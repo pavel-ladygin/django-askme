@@ -21,7 +21,7 @@
 </div>
 
 <!-- Карточка вопроса -->
-{% include "question.html" with q=question show_title=True %}
+{% include "question.html" with q=question %}
 
 <div class="d-flex align-items-center justify-content-between mt-4 mb-2">
     <h2 class="h5 mb-0" id="answers">Ответы</h2>
@@ -35,28 +35,51 @@
     <div class="text-muted">Ответов пока нет.</div>
 {% endfor %}
 
-
-<!-- Форма для добавления своего ответа (нужно будет проверять авторизацию)-->
-<section id="add-answer" class="mt-5">
-  <h3 class="h5 mb-3">Ваш ответ</h3>
-  <form>
-    <div class="mb-3">
-      <label for="id_text" class="form-label">Текст ответа</label>
-      <textarea id="id_text"
-                name="text"
-                class="form-control"
-                rows="8"
-                required
-                placeholder="Поделитесь решением или идеями по вопросу"></textarea>
-      <div class="form-text">Поддерживаются базовые форматирования и ссылки.</div>
+<!-- Форма добавления ответа (только для авторизованных) -->
+{% if user.is_authenticated %}
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title mb-3">Ваш ответ</h5>
+    
+    <!-- Общие ошибки формы -->
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
     </div>
-    <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-primary">Опубликовать ответ</button>
-      <a class="btn btn-outline-secondary">Отмена</a>
-    </div>
-  </form>
-</section>
-
+    {% endif %}
+    
+    <form method="post" novalidate>
+      {% csrf_token %}
+      
+      <div class="mb-3">
+        <textarea 
+          id="id_text" 
+          name="text" 
+          rows="6"
+          class="form-control {% if form.text.errors %}is-invalid{% endif %}"
+          placeholder="Напишите ваш ответ здесь..."
+          required>{{ form.text.value|default:'' }}</textarea>
+        {% if form.text.errors %}
+        <div class="invalid-feedback">
+            {% for error in form.text.errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      
+      <button type="submit" class="btn btn-primary">Отправить ответ</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<!-- Сообщение для неавторизованных -->
+<div class="card mb-3">
+  <div class="card-body text-center">
+    <p class="mb-2">Чтобы ответить на вопрос, необходимо <a href="{% url 'login' %}?continue={{ request.path }}">войти</a> или <a href="{% url 'signup' %}">зарегистрироваться</a>.</p>
+  </div>
+</div>
+{% endif %}
 
 <!-- Пагинация -->
 {% include "paginator.html" with page_obj=page_obj %}

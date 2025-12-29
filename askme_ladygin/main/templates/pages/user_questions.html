@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Тег: {{ tag|default:"тег" }} — AskMe{% endblock %}
+{% block title %}Пользователь: {{ user|default:"тег" }} — AskMe{% endblock %}
 
 {% block content %}
 <!-- Заголовок и хлебные крошки -->
@@ -11,13 +11,13 @@
         <ol class="breadcrumb mb-1">
           <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
           <li class="breadcrumb-item active" aria-current="page">
-            Тег: {{ tag|default:"—" }}
+            Пользователь: {{ user|default:"—" }}
           </li>
         </ol>
       </nav>
       <h1 class="h4 mb-0">
-        Вопросы по тегу: 
-        <span class="badge bg-secondary">{{ tag|default:"—" }}</span>
+        Вопросы от пользователя: 
+        <span class="badge bg-secondary">{{ user|default:"—" }}</span>
       </h1>
     </div>
     <a href="{% url 'ask' %}" class="btn btn-primary">Задать вопрос</a>

@@ -10,8 +10,10 @@
     </title>
     <link rel="stylesheet" href="{% static 'bootstrap-5.3.8-dist/css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-</head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
 <body class="d-flex flex-column min-vh-100">
+    {% csrf_token %}
     <!-- Шапка базовой страницы -->
     <nav class="navbar navbar-expand-lg bg-light border-bottom px-3">
     <div class="container-fluid">
@@ -25,23 +27,29 @@
         <input class="form-control me-2" type="search" placeholder="Поиск..." aria-label="Search">
         <button class="btn btn-outline-primary" type="submit">Найти</button>
         </form>
-
-        <!-- Вариант для неавторизованного пользователя -->
-        <!-- <div class="d-flex align-items-center gap-2">
-        <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">Войти</a>
-        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Регистрация</a>
-        </div> -->
         
-        <!-- Альтернативный вариант для авторизованного пользователя: -->
+        {% if user.is_authenticated %}
+        <!-- Вариант для авторизованного пользователя -->
         <div class="d-flex align-items-center gap-2">
-        <a href="{% url 'profile' %}" class="d-inline-block" title="Редактировать профиль" aria-label="Редактировать профиль">
-            <img src="{% static 'img/logo.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle border">
-        </a>
-        <span class="fw-bold">user</span>
-        <a href="" class="btn btn-outline-danger btn-sm">Выйти</a>
+            <a href="{% url 'profile' %}" class="d-inline-block" title="Редактировать профиль" aria-label="Редактировать профиль">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="Аватар" width="40" height="40" class="rounded-circle border">
+                {% else %}
+                    <img src="{% static 'img/logo.png' %}" alt="Аватар" width="40" height="40" class="rounded-circle border">
+                {% endif %}
+            </a>
+            <span class="fw-bold">{{ user.username }}</span>
+            <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Выйти</a>
         </div>
+        {% else %}
+        <!-- Альтернативный вариант для неавторизованного пользователя: -->
+        <div class="d-flex align-items-center gap-2">
+            <a href="{% url 'login' %}" class="btn btn-outline-success btn-sm">Войти</a>
+            <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Регистрация</a>
+        </div>
+        {% endif %}
 
-       
+
 </div>
     </div>
     </nav>
@@ -61,11 +69,15 @@
                     <div class="card-header">
                         Популярные теги
                     </div>
-                    <!-- Заглушка под теги -->
+                    <!-- Лучшие теги -->
                         <div class="card-body">
-                        <a href="{% url 'tag' 'python' %}" class="badge bg-secondary me-1 mb-1">Python</a>
-                        <a href="{% url 'tag' 'django' %}" class="badge bg-secondary me-1 mb-1">Django</a>
-                        <a href="{% url 'tag' 'web' %}" class="badge bg-secondary me-1 mb-1">Web</a>
+                            {% for tag in popular_tags %}
+                                <a href="{% url 'tag' tag.slug %}" 
+                                class="badge bg-secondary me-1 mb-2">
+                                    {{ tag.name }} 
+                                </a>
+                            {% endfor %}
+ 
                         </div>
                 </div>
 
@@ -73,13 +85,15 @@
                     <div class="card-header">
                         Лучшие пользователи
                     </div>
-                    <div class="card-body">
-                        <ul class="list-unstyled mb-0">
-                            <li>Пользователь1</li>
-                            <li>Пользователь2</li>
-                            <li>Пользователь3</li>
-                        </ul>
-                    </div>
+                    <!-- Лучшие пользователи -->
+                        <div class="card-body">
+                            {% for user in top_users %}
+                                <a href = "{% url 'user_questions' user.user.id%}"
+                                class ="badge bg-secondary me-1 mb-2" >
+                                    {{ user.user}}
+                                </a>
+                            {% endfor %}
+                        </div>
                 </div>
                 {% endblock %}
                 </div>
@@ -91,7 +105,18 @@
         &copy; 2025 AskMe. Все права защищены.
     </div>
 </footer>
-<script src="{% static 'bootstrap-5.3.8-dist/js/bootstrap.bundle.js' %}"></script>
 
+<script>
+    
+// Глобальные переменные с URL
+window.djangoUrls = {
+    toggle_question_vote: "{% url 'toggle_question_vote' %}",
+    toggle_answer_vote: "{% url 'toggle_answer_vote' %}",
+    mark_answer_correct: "{% url 'mark_answer_correct' %}",
+    unmark_answer_correct: "{% url 'unmark_answer_correct' %}",
+};
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/votes.js' %}"></script>
 </body>
 </html>

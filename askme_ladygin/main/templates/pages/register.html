@@ -5,11 +5,12 @@
 {% block content %}
 <div class="container" style="max-width: 500px;">
     <h3 class="mb-4">Регистрация</h3>
-
+    {% if form.errors %}
     <!-- Сообщение об общей ошибке -->
     <div class="alert alert-danger" role="alert">
         Пожалуйста, исправьте ошибки в форме.
     </div>
+    {% endif %}
 
     <form method="post" novalidate>
         {% csrf_token %}
@@ -17,41 +18,87 @@
         <!-- Поле для имени пользователя -->
         <div class="mb-3">
             <label for="username" class="form-label">Имя пользователя</label>
-            <input type="text" class="form-control is-invalid" id="username" name="username"
-                   placeholder="Введите имя пользователя" maxlength="50">
+            <input type="text" 
+            class="form-control 
+                        {% if form.username.errors %}
+                        is-invalid
+                        {% endif %}" 
+                id="username" 
+                name="username"
+                value=" {{ form.username.value|default:'' }} "
+                placeholder="Введите имя пользователя" 
+                maxlength="50">
+            {% if form.username.errors %}
             <div class="invalid-feedback">
-                Поле обязательно для заполнения.
+                {% for error in form.username.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
+            {% endif %}
         </div>
 
         <!-- Поле для ввода emal пользователя-->
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control is-invalid" id="email" name="email"
-                   placeholder="Введите email" maxlength="100">
+            <input type="email" 
+                class="form-control 
+                        {% if form.email.errors %}
+                        is-invalid
+                        {% endif %}" 
+                id="email" 
+                name="email"
+                value=" {{ form.email.value|default:'' }} "
+                placeholder="Введите email" 
+                maxlength="100">
+            {% if form.email.errors %}
             <div class="invalid-feedback">
-                Введите корректный email.
+                {% for error in form.email.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
+            {% endif %}
         </div>
 
         <!-- Поле для ввода пароля пользователя -->
         <div class="mb-3">
             <label for="password1" class="form-label">Пароль</label>
-            <input type="password" class="form-control is-invalid" id="password1" name="password1"
+            <input type="password" 
+                class="form-control 
+                        {% if form.password1.errors %}
+                        is-invalid
+                        {% endif %}" 
+                id="password1" 
+                name="password1"
                    placeholder="Введите пароль" maxlength="50">
-            <div class="invalid-feedback">
-                Пароль обязателен.
+
+            {% if form.password1.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.password1.errors %}
+                        {{ error }}
+                    {% endfor %}
             </div>
+            {% endif %} 
         </div>
 
         <!-- Поле для подтверждения пароля -->
         <div class="mb-3">
             <label for="password2" class="form-label">Подтверждение пароля</label>
-            <input type="password" class="form-control is-invalid" id="password2" name="password2"
-                   placeholder="Повторите пароль" maxlength="50">
+            <input type="password" 
+                class="form-control 
+                        {% if form.password2.errors %}
+                        is-invalid
+                        {% endif %}"
+                id="password2" 
+                name="password2"
+                placeholder="Повторите пароль"
+                maxlength="50">
+            {% if form.password2.errors %}
             <div class="invalid-feedback">
-                Пароли должны совпадать.
+                {% for error in form.password2.errors %}
+                    {{ error }}
+                {% endfor %}
             </div>
+            {% endif %} 
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
